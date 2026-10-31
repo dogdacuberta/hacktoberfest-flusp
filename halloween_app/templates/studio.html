@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O Estúdio | USP Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --accent:#dc143c; --ivory:#f5f5f5; --muted:#b9b9b9;
+    --font-title:'Bodoni Moda', Georgia, 'Times New Roman', serif;
+    --font-body:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing:border-box; }
+body {
+    margin:0; padding:16px; min-height:100vh; color:var(--ivory);
+    font-family:var(--font-body);
+    background:radial-gradient(circle at 20% 0%, #1a0000, #050505 60%);
+}
+.back { color:var(--muted); text-decoration:none; font-size:.9rem; }
+.wrap {
+    max-width:1100px; margin:12px auto 0; display:grid; gap:24px;
+    grid-template-columns:minmax(0,5fr) minmax(0,6fr);
+}
+@media (max-width:820px){ .wrap{ grid-template-columns:1fr; } }
+
+/* FOTO + ROUPA */
+.photo-card {
+    position:relative; overflow:hidden; border-radius:16px;
+    border:2px solid var(--accent); box-shadow:0 0 30px -6px var(--accent);
+    transition:border-color .5s, box-shadow .5s;
+}
+#sprite { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; transition:filter .6s; }
+#outfit { position:absolute; inset:0; width:100%; height:100%; touch-action:none; cursor:grab; }
+#o-in { filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.55)); }
+#o-in.pop { animation:pop .45s ease; }
+@keyframes pop { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+.era-badge {
+    position:absolute; left:12px; bottom:12px; background:rgba(0,0,0,.72);
+    padding:4px 12px; border-radius:99px; font-size:.8rem; border:1px solid var(--accent);
+    pointer-events:none;
+}
+.fit { display:flex; align-items:center; gap:10px; margin-top:10px; font-size:.78rem; color:var(--muted); flex-wrap:wrap; }
+.fit input[type=range] { flex:1; min-width:90px; accent-color:var(--accent); }
+.fit button {
+    background:transparent; color:var(--muted); border:1px solid #444; border-radius:8px;
+    padding:4px 10px; font:inherit; font-size:.75rem; cursor:pointer;
+}
+.fit button:hover { border-color:var(--accent); color:var(--ivory); }
+.pieces { margin-top:10px; }
+.bubble {
+    display:none; margin-top:14px; background:var(--ivory); color:#000;
+    padding:12px 16px; border-radius:16px; font-weight:500; font-size:.95rem;
+    box-shadow:4px 4px 0 var(--accent);
+}
+.bubble small { display:block; font-weight:400; opacity:.6; margin-bottom:2px; }
+
+/* PAINEL */
+h1 { font-family:var(--font-title); font-weight:700; letter-spacing:.5px; color:var(--accent); font-size:clamp(1.9rem,5vw,2.6rem); margin:0 0 4px; transition:color .5s; }
+.sub { color:var(--muted); margin:0 0 18px; font-weight:400; }
+.label { font-size:.75rem; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:8px; font-weight:500; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+.chip {
+    background:transparent; color:var(--ivory); border:1px solid #444; border-radius:99px;
+    padding:8px 14px; cursor:pointer; font:inherit; font-size:.85rem; transition:.25s;
+}
+.chip:hover { border-color:var(--accent); }
+.chip.active { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; }
+.btn {
+    width:100%; padding:15px; border:none; border-radius:10px; cursor:pointer;
+    background:var(--accent); color:#fff; font:inherit; font-weight:700;
+    text-transform:uppercase; letter-spacing:2px; transition:.3s;
+}
+.btn:hover:not(:disabled) { filter:brightness(1.15); }
+.btn:disabled { opacity:.6; cursor:wait; }
+
+/* RESULTADO */
+#result { margin-top:20px; }
+.card { background:rgba(255,255,255,.04); border:1px solid #2a2a2a; border-radius:14px; padding:16px; margin-bottom:12px; }
+.verdict { display:inline-block; padding:5px 12px; border-radius:99px; font-size:.85rem; font-weight:700; margin-bottom:12px; }
+.v-combina { background:#12361f; color:#5dff9a; }
+.v-parcial { background:#3a3012; color:#ffd24d; }
+.v-contraste { background:#3a1218; color:#ff6b81; }
+.look { font-size:1.05rem; line-height:1.55; }
+.look b { color:#ffd700; display:block; font-size:.72rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; font-weight:700; }
+.meter { margin:10px 0; }
+.meter-head { display:flex; justify-content:space-between; font-size:.85rem; margin-bottom:4px; }
+.bar { height:8px; background:#222; border-radius:99px; overflow:hidden; }
+.bar i { display:block; height:100%; width:0; background:var(--accent); border-radius:99px; transition:width 1s ease; }
+.note { font-size:.72rem; color:var(--muted); margin:6px 0 0; }
+details { margin-top:8px; font-size:.9rem; }
+summary { cursor:pointer; color:var(--muted); }
+details p { margin:8px 0 0; line-height:1.55; }
+.tags { display:flex; flex-wrap:wrap; gap:6px; }
+.tag { background:#1c1c1c; border:1px solid #333; border-radius:8px; padding:5px 10px; font-size:.82rem; }
+.skel { height:14px; border-radius:6px; margin:10px 0; background:linear-gradient(90deg,#1a1a1a,#2a2a2a,#1a1a1a); background-size:200% 100%; animation:sh 1.2s infinite; }
+@keyframes sh { to { background-position:-200% 0; } }
+.err { color:#ff6b81; }
+@keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+.bounce { animation:bounce .5s ease; }
+
+/* CLIMA HALLOWEEN */
+body::before {
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:radial-gradient(ellipse at 50% 120%, rgba(139,0,0,.25), transparent 60%),
+               radial-gradient(ellipse at 50% -20%, rgba(80,0,40,.3), transparent 60%);
+}
+.wrap, .back { position:relative; z-index:1; }
+.bat { position:fixed; left:-10vw; font-size:1.5rem; opacity:.45; pointer-events:none; z-index:0; animation:fly 16s linear infinite; }
+@keyframes fly {
+    0%   { transform:translate(0,0); }
+    25%  { transform:translate(30vw,-30px); }
+    50%  { transform:translate(60vw,20px); }
+    75%  { transform:translate(90vw,-20px); }
+    100% { transform:translate(120vw,0); }
+}
+.vig { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .6s;
+       background:radial-gradient(circle at 50% 45%, transparent 45%, rgba(0,0,0,.75) 100%); }
+.drip { position:absolute; top:0; left:0; width:100%; height:44px; pointer-events:none;
+        opacity:0; transform:translateY(-100%); transition:all .6s; }
+.photo-card.terror .vig { opacity:1; }
+.photo-card.terror .drip { opacity:1; transform:none; }
+.photo-card.terror { animation:flicker 3.5s infinite; }
+@keyframes flicker {
+    0%,100%,50%,56% { box-shadow:0 0 34px -4px var(--accent); }
+    53% { box-shadow:0 0 6px -6px var(--accent); }
+}
+.label.terror-label { color:#ff4d4d; }
+@media (prefers-reduced-motion:reduce){ .bat, .photo-card.terror { animation:none; } }
+</style>
+</head>
+<body>
+<span class="bat" style="top:8%">🦇</span>
+<span class="bat" style="top:22%; animation-delay:-7s; font-size:1.1rem">🦇</span>
+
+<a class="back" href="/">← Trocar personagem</a>
+
+<div class="wrap">
+    <div>
+        <div class="photo-card" id="photo-card">
+            <img id="sprite" src="" alt="Personagem">
+            <svg id="outfit" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                <g id="o-pos"><g id="o-in"></g></g>
+            </svg>
+            <span class="era-badge" id="era-badge"></span>
+            <div class="vig"></div>
+            <svg class="drip" viewBox="0 0 100 20" preserveAspectRatio="none">
+              <path d="M0 0H100V4Q95 4 95 11Q95 15 92 11Q91 4 85 4Q75 4 72 4Q70 4 70 17Q66 19 66 4Q55 4 50 4Q46 4 46 9Q44 13 42 9Q40 4 30 4Q20 4 18 4Q16 4 16 15Q12 17 12 4Q6 4 0 4Z" fill="#8b0000"/>
+            </svg>
+        </div>
+
+        <div class="fit">
+            <span>Arraste a roupa na foto ·</span>
+            <label for="size">Tamanho</label>
+            <input type="range" id="size" min="50" max="170" value="100">
+            <button onclick="resetPos()">Resetar</button>
+            <button onclick="copyPos()">Copiar ajuste</button>
+        </div>
+
+        <div class="pieces">
+            <div class="label">Peças do look</div>
+            <div class="tags" id="pieces"></div>
+        </div>
+
+        <div class="bubble" id="bubble"></div>
+    </div>
+
+    <div>
+        <h1 id="title">Fashion Studio</h1>
+        <p class="sub" id="sub">Escolha um estilo e veja o look.</p>
+
+        <div class="label">Eras da moda</div>
+        <div class="chips" id="chips"></div>
+
+        <div class="label terror-label">☠️ Especial terror</div>
+        <div class="chips" id="chips-terror"></div>
+
+        <button class="btn" id="go" onclick="requestOutfit()">Gerar análise de estilo ✨</button>
+        <div id="result"></div>
+    </div>
+</div>
+
+<script>
+const ANIMALS = { quati:"Quati da EACH", galinha:"Galinha", flusp:"FLUSP" };
+
+// Posição padrão da roupa em cada foto (x, y em unidades de 0 a 100; s = tamanho).
+// Ajuste arrastando na tela, clique em "Copiar ajuste" e cole os valores aqui.
+const DEFAULTS = {
+  quati:   { x:0, y:0, s:1 },
+  galinha: { x:0, y:0, s:1 },
+  flusp:   { x:0, y:0, s:1 },
+};
+
+/* ---------- PEÇAS DE ROUPA (SVG, coordenadas 0-100) ----------
+   Cabeça centrada em (50,30), olhos em y≈31, pescoço em y≈58. */
+const T = "M14 100 L20 68 Q30 57 50 59 Q70 57 80 68 L86 100 Z"; // tronco
+
+const plaid = (id, bg, ln) => `<defs><pattern id="${id}" width="8" height="8" patternUnits="userSpaceOnUse">
+  <rect width="8" height="8" fill="${bg}"/><rect y="3" width="8" height="2" fill="${ln}"/>
+  <rect x="3" width="2" height="8" fill="${ln}"/></pattern></defs>`;
+
+const pearls = (n = 9) => Array.from({ length: n }, (_, i) => {
+  const t = i / (n - 1);
+  return `<circle cx="${(40 + 20 * t).toFixed(1)}" cy="${(60 + 12 * Math.sin(Math.PI * t)).toFixed(1)}" r="1.9" fill="#fffaf0" stroke="#cdbf9f" stroke-width=".4"/>`;
+}).join("");
+
+const crown = () => Array.from({ length: 7 }, (_, i) => {
+  const deg = 200 + i * 23.3, a = deg * Math.PI / 180;
+  const x = (50 + 21 * Math.cos(a)).toFixed(1), y = (28 + 21 * Math.sin(a)).toFixed(1);
+  return `<ellipse cx="${x}" cy="${y}" rx="5" ry="2.2" transform="rotate(${(deg + 90).toFixed(0)} ${x} ${y})" fill="${i % 2 ? '#2ecc71' : '#3dff9a'}"/>`;
+}).join("");
+
+const ruff = (c1, c2) => Array.from({ length: 9 }, (_, i) =>
+  `<circle cx="${(32 + i * 4.5).toFixed(1)}" cy="${(61 + 5 * Math.sin(Math.PI * i / 8)).toFixed(1)}" r="4" fill="${i % 2 ? c1 : c2}" stroke="rgba(0,0,0,.35)" stroke-width=".5"/>`).join("");
+
+const stitches = Array.from({ length: 7 }, (_, i) =>
+  `<path d="M${38 + i * 4} 21.5 V26.5" stroke="#2b0a0a" stroke-width="1"/>`).join("");
+
+const ERAS = [
+  /* ===== ERAS DA MODA ===== */
+  { y:"1970", name:"70s Disco", color:"#ff9f1c", filter:"sepia(.55) saturate(1.5) contrast(1.05)",
+    pieces:["Camisa de gola larga","Medalhão dourado","Óculos âmbar","Faixa de cabelo"],
+    outfit:() => `
+      <path d="${T}" fill="#e07b00"/>
+      <path d="M50 59 L33 55 L24 76 L46 68 Z" fill="#fff0d0" stroke="#8a4b00" stroke-width=".8"/>
+      <path d="M50 59 L67 55 L76 76 L54 68 Z" fill="#fff0d0" stroke="#8a4b00" stroke-width=".8"/>
+      <path d="M50 66 L50 100" stroke="#8a4b00" stroke-width="1"/>
+      <path d="M41 58 Q50 80 59 58" fill="none" stroke="#ffd700" stroke-width="1"/>
+      <circle cx="50" cy="75" r="3.2" fill="#ffd700" stroke="#a67c00" stroke-width=".6"/>
+      <path d="M32 21 Q50 11 68 21" fill="none" stroke="#ff9f1c" stroke-width="4" stroke-linecap="round"/>
+      <path d="M32 25 Q50 15 68 25" fill="none" stroke="#fff0d0" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="41" cy="31" r="7" fill="rgba(255,150,0,.45)" stroke="#5a3000" stroke-width="1.6"/>
+      <circle cx="59" cy="31" r="7" fill="rgba(255,150,0,.45)" stroke="#5a3000" stroke-width="1.6"/>
+      <path d="M48 30 Q50 28 52 30" fill="none" stroke="#5a3000" stroke-width="1.6"/>` },
+
+  { y:"1980", name:"80s Neon Pop", color:"#ff2fd6", filter:"saturate(1.8) contrast(1.1) hue-rotate(300deg)",
+    pieces:["Jaqueta com ombreiras","Camiseta neon","Óculos wayfarer","Munhequeira de cabeça"],
+    outfit:() => `
+      <path d="M8 76 Q10 58 28 58 L31 72 Z" fill="#ff2fd6"/>
+      <path d="M92 76 Q90 58 72 58 L69 72 Z" fill="#ff2fd6"/>
+      <path d="${T}" fill="#ff2fd6"/>
+      <path d="M36 60 L50 84 L64 60 Z" fill="#00e5ff"/>
+      <path d="M16 90 L84 90" stroke="#00e5ff" stroke-width="2.2"/>
+      <path d="M15 95 L85 95" stroke="#ffe600" stroke-width="1.4"/>
+      <path d="M32 20 Q50 10 68 20" fill="none" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round"/>
+      <rect x="34" y="27" width="14" height="9" rx="2" fill="rgba(0,229,255,.5)" stroke="#111" stroke-width="1.8"/>
+      <rect x="52" y="27" width="14" height="9" rx="2" fill="rgba(0,229,255,.5)" stroke="#111" stroke-width="1.8"/>
+      <path d="M48 30 H52" stroke="#111" stroke-width="1.8"/>` },
+
+  { y:"1990", name:"90s Grunge", color:"#7a8b99", filter:"grayscale(.6) contrast(1.2) brightness(.9)",
+    pieces:["Camisa de flanela","Camiseta de banda","Gorro de lã"],
+    outfit:() => `${plaid("pl90","#9c1c1c","rgba(0,0,0,.45)")}
+      <path d="${T}" fill="url(#pl90)"/>
+      <path d="M41 60 Q50 74 59 60 L59 100 L41 100 Z" fill="#1d1d1d"/>
+      <path d="M45 82 L55 82 M46 87 L54 87" stroke="#c9c9c9" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M41 60 L36 70 L46 66 Z M59 60 L64 70 L54 66 Z" fill="#7d1515" stroke="#000" stroke-width=".5"/>
+      <path d="M31 22 Q31 4 50 4 Q69 4 69 22 Z" fill="#6b7782"/>
+      <rect x="30" y="19" width="40" height="8" rx="3" fill="#4f5a63"/>
+      <path d="M34 19 V27 M40 19 V27 M46 19 V27 M52 19 V27 M58 19 V27 M64 19 V27" stroke="#3d464d" stroke-width=".8"/>` },
+
+  { y:"2000", name:"Y2K", color:"#4dd2ff", filter:"saturate(1.5) brightness(1.1) hue-rotate(160deg)",
+    pieces:["Colete metalizado","Gola de pelúcia rosa","Óculos minúsculos","Presilha de borboleta"],
+    outfit:() => `
+      <defs><linearGradient id="mt" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#e8f4ff"/><stop offset=".5" stop-color="#8fb4d6"/><stop offset="1" stop-color="#f4fbff"/></linearGradient></defs>
+      <path d="${T}" fill="url(#mt)"/>
+      <path d="M17 76 H83 M16 86 H84 M15 95 H85" stroke="rgba(0,0,0,.18)" stroke-width="1"/>
+      <path d="M50 66 V100" stroke="#506b82" stroke-width="1.2"/>
+      <path d="M31 62 Q50 76 69 62 L69 67 Q50 82 31 67 Z" fill="#ff8ad8"/>
+      <rect x="35" y="29" width="12" height="5.5" rx="2.7" fill="rgba(77,210,255,.65)" stroke="#1b4d66" stroke-width="1.2"/>
+      <rect x="53" y="29" width="12" height="5.5" rx="2.7" fill="rgba(77,210,255,.65)" stroke="#1b4d66" stroke-width="1.2"/>
+      <path d="M47 31 H53" stroke="#1b4d66" stroke-width="1.2"/>
+      <ellipse cx="59" cy="15" rx="4.2" ry="2.7" transform="rotate(-25 59 15)" fill="#ff8ad8"/>
+      <ellipse cx="65" cy="15" rx="4.2" ry="2.7" transform="rotate(25 65 15)" fill="#4dd2ff"/>
+      <circle cx="62" cy="15.5" r="1.1" fill="#fff"/>` },
+
+  { y:"2016", name:"2016 Hipster", color:"#c9a227", filter:"sepia(.35) saturate(1.2) contrast(.95)",
+    pieces:["Camisa xadrez","Boina","Óculos redondos"],
+    outfit:() => `${plaid("pl16","#c9a227","rgba(90,60,0,.5)")}
+      <path d="${T}" fill="url(#pl16)"/>
+      <path d="M50 59 L50 100" stroke="#5a3d00" stroke-width="1.2"/>
+      <path d="M41 60 L35 71 L46 66 Z M59 60 L65 71 L54 66 Z" fill="#a88518" stroke="#5a3d00" stroke-width=".5"/>
+      <circle cx="50" cy="75" r=".9" fill="#5a3d00"/><circle cx="50" cy="86" r=".9" fill="#5a3d00"/>
+      <path d="M32 22 Q36 8 54 9 Q68 10 68 22 Z" fill="#7a5a34"/>
+      <path d="M32 22 Q22 23 24 27 L50 24 Z" fill="#5e4326"/>
+      <circle cx="53" cy="8.5" r="1.5" fill="#5e4326"/>
+      <circle cx="42" cy="32" r="6.5" fill="rgba(255,255,255,.08)" stroke="#1d1d1d" stroke-width="1.4"/>
+      <circle cx="58" cy="32" r="6.5" fill="rgba(255,255,255,.08)" stroke="#1d1d1d" stroke-width="1.4"/>
+      <path d="M48.5 31 Q50 29.5 51.5 31" fill="none" stroke="#1d1d1d" stroke-width="1.4"/>` },
+
+  { y:"2020", name:"2020 E-Girl", color:"#b026ff", filter:"saturate(1.6) contrast(1.15) hue-rotate(250deg)",
+    pieces:["Moletom roxo","Headset gamer","Corrente prateada","Coração"],
+    outfit:() => `
+      <path d="M26 68 Q28 50 50 52 Q72 50 74 68 L70 72 Q50 61 30 72 Z" fill="#6b17a3"/>
+      <path d="${T}" fill="#9b30e8"/>
+      <path d="M44 64 L43 82 M56 64 L57 82" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M50 94 C41 87 43 79 50 84 C57 79 59 87 50 94 Z" fill="#ff7ad9"/>
+      <path d="M38 60 Q50 80 62 60" fill="none" stroke="#e6e6e6" stroke-width="1.5" stroke-dasharray="2 1.2"/>
+      <path d="M30 31 Q30 7 50 7 Q70 7 70 31" fill="none" stroke="#1b1b1b" stroke-width="3" stroke-linecap="round"/>
+      <rect x="26.5" y="26" width="6" height="12" rx="3" fill="#1b1b1b" stroke="#d98bff" stroke-width="1"/>
+      <rect x="67.5" y="26" width="6" height="12" rx="3" fill="#1b1b1b" stroke="#d98bff" stroke-width="1"/>
+      <path d="M30 37 Q32 46 41 45" fill="none" stroke="#1b1b1b" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="42" cy="45" r="1.8" fill="#d98bff"/>` },
+
+  { y:"2024", name:"Quiet Luxury", color:"#d8cbb8", filter:"saturate(.6) brightness(1.05) contrast(.95)",
+    pieces:["Blazer bege","Colar de pérolas","Laço de cabelo","Óculos escuros"],
+    outfit:() => `
+      <path d="${T}" fill="#d9ccb8"/>
+      <path d="M38 59 L50 88 L62 59 Z" fill="#fffaf2"/>
+      <path d="M37 58 L50 90 L31 80 Z" fill="#c4b497" stroke="#a99a7c" stroke-width=".5"/>
+      <path d="M63 58 L50 90 L69 80 Z" fill="#c4b497" stroke="#a99a7c" stroke-width=".5"/>
+      <circle cx="50" cy="95" r="1.2" fill="#8a7a5c"/>
+      ${pearls()}
+      <path d="M60 14 L49 8 L49 20 Z" fill="#f5efe6" stroke="#bfae92" stroke-width=".6"/>
+      <path d="M60 14 L71 8 L71 20 Z" fill="#f5efe6" stroke="#bfae92" stroke-width=".6"/>
+      <circle cx="60" cy="14" r="2.6" fill="#e6dccb" stroke="#bfae92" stroke-width=".5"/>
+      <rect x="33" y="27" width="15" height="10" rx="4" fill="rgba(20,20,20,.78)"/>
+      <rect x="52" y="27" width="15" height="10" rx="4" fill="rgba(20,20,20,.78)"/>
+      <path d="M48 31 H52" stroke="#222" stroke-width="1.4"/>` },
+
+  { y:"2026", name:"Cyber-Organic", color:"#3dff9a", filter:"saturate(1.4) hue-rotate(80deg) contrast(1.05)",
+    pieces:["Jaqueta bioluminescente","Visor de realidade aumentada","Coroa de folhas"],
+    outfit:() => `
+      <path d="${T}" fill="#0f2a1f" stroke="#3dff9a" stroke-width=".6"/>
+      <path d="M50 62 V100 M30 74 H38 V86 M70 74 H62 V86" fill="none" stroke="#3dff9a" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="50" cy="62" r="1.4" fill="#3dff9a"/><circle cx="38" cy="86" r="1.4" fill="#3dff9a"/><circle cx="62" cy="86" r="1.4" fill="#3dff9a"/>
+      <ellipse cx="30" cy="63" rx="7.5" ry="3" transform="rotate(-30 30 63)" fill="#2ecc71"/>
+      <ellipse cx="70" cy="63" rx="7.5" ry="3" transform="rotate(30 70 63)" fill="#2ecc71"/>
+      ${crown()}
+      <rect x="32" y="26" width="36" height="9" rx="4.5" fill="rgba(61,255,154,.45)" stroke="#3dff9a" stroke-width="1.4"/>
+      <path d="M37 29 H48" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity=".8"/>` },
+
+  /* ===== ESPECIAL TERROR ===== */
+  { y:"vampiro", group:"terror", name:"🧛 Vampiro", color:"#c0112b", filter:"grayscale(.4) contrast(1.25) brightness(.85) saturate(1.2)",
+    pieces:["Capa de gola alta","Jabô branco","Broche de rubi","Presas"],
+    outfit:() => `
+      <path d="M5 100 L13 66 Q50 46 87 66 L95 100 Z" fill="#7a0010"/>
+      <path d="M10 100 L17 70 Q50 54 83 70 L90 100 Z" fill="#1a0006"/>
+      <path d="${T}" fill="#141414"/>
+      <path d="M44 59 L50 82 L56 59 Z" fill="#f5f5f5"/>
+      <path d="M33 59 L24 34 L45 57 Z" fill="#141414" stroke="#8b0000" stroke-width="1"/>
+      <path d="M67 59 L76 34 L55 57 Z" fill="#141414" stroke="#8b0000" stroke-width="1"/>
+      <path d="M33 59 L28 44 L42 57 Z" fill="#7a0010"/>
+      <path d="M67 59 L72 44 L58 57 Z" fill="#7a0010"/>
+      <circle cx="50" cy="68" r="3" fill="#c0112b" stroke="#ffd700" stroke-width="1"/>
+      <path d="M45.5 38 L47.5 44 L49.5 38 Z M50.5 38 L52.5 44 L54.5 38 Z" fill="#fff" stroke="#999" stroke-width=".3"/>
+      <path d="M47.5 44 Q47 48 47.5 50" fill="none" stroke="#b00020" stroke-width="1.2" stroke-linecap="round"/>` },
+
+  { y:"bruxa", group:"terror", name:"🧙 Bruxa", color:"#8e44d6", filter:"saturate(1.3) contrast(1.15) hue-rotate(250deg) brightness(.9)",
+    pieces:["Chapéu pontudo","Túnica estrelada","Poção verde"],
+    outfit:() => `
+      <path d="M10 100 L16 66 Q50 50 84 66 L90 100 Z" fill="#3b1456"/>
+      <path d="${T}" fill="#5a2a82"/>
+      <path d="M40 59 Q50 70 60 59" fill="none" stroke="#ffd700" stroke-width="1.4"/>
+      <circle cx="50" cy="71" r="2.6" fill="#7dff4d" stroke="#2c7a12" stroke-width=".8"/>
+      ${[[30,80],[68,76],[40,92],[60,90],[24,92]].map(([x,y]) => `<circle cx="${x}" cy="${y}" r="1.3" fill="#ffd24d"/>`).join("")}
+      <ellipse cx="50" cy="21" rx="23" ry="4.5" fill="#15101c"/>
+      <path d="M37 21 Q45 14 47 4 L54 7 Q55 15 63 21 Z" fill="#1d1226"/>
+      <rect x="38.5" y="16.5" width="23" height="3.6" fill="#8e44d6"/>
+      <rect x="47" y="15.8" width="6" height="5" rx=".8" fill="none" stroke="#ffd700" stroke-width="1"/>` },
+
+  { y:"mumia", group:"terror", name:"🪦 Múmia", color:"#c9b27a", filter:"sepia(.6) contrast(1.1) brightness(.95)",
+    pieces:["Bandagens na cabeça","Tronco enfaixado","Faixa solta"],
+    outfit:() => `
+      <path d="${T}" fill="#e6d9b8"/>
+      ${[70,76,82,88,94].map((y, i) => `<path d="M${16 + i % 2 * 2} ${y} L${84 - i % 2 * 2} ${y + (i % 2 ? -2 : 2)}" stroke="#a8966a" stroke-width="1"/>`).join("")}
+      <path d="M70 60 Q80 76 72 92" fill="none" stroke="#e6d9b8" stroke-width="3.2" stroke-linecap="round"/>
+      <path d="M30 14 L70 21 M30 20 L70 14 M31 25 L69 22" stroke="#e6d9b8" stroke-width="3.6" stroke-linecap="round"/>
+      <path d="M31 41 L69 45 M31 46 L69 42" stroke="#e6d9b8" stroke-width="3.6" stroke-linecap="round"/>
+      <path d="M30 14 L70 21 M31 41 L69 45" stroke="#a8966a" stroke-width=".6" transform="translate(0 1.6)"/>` },
+
+  { y:"zumbi", group:"terror", name:"🧟 Zumbi", color:"#7fa84a", filter:"saturate(.7) hue-rotate(60deg) contrast(1.2) brightness(.85)",
+    pieces:["Camisa rasgada","Manchas de sangue","Cicatriz na testa","Olheiras"],
+    outfit:() => `
+      <path d="${T}" fill="#4d5a3c"/>
+      <path d="M14 100 L16 90 L22 95 L28 88 L34 96 L40 89 L46 97 L52 90 L58 98 L64 90 L70 96 L76 89 L84 95 L86 100 Z" fill="#23291a"/>
+      <path d="M60 62 L70 72 L62 80 L72 92 L58 86 L52 70 Z" fill="#7a1010" opacity=".85"/>
+      <circle cx="30" cy="80" r="2.4" fill="#8b0000"/><circle cx="35" cy="86" r="1.4" fill="#8b0000"/>
+      <path d="M41 61 L36 70 L46 66 Z M59 61 L64 70 L54 66 Z" fill="#3a452b"/>
+      <ellipse cx="50" cy="32" rx="17" ry="19" fill="rgba(110,150,70,.3)"/>
+      <ellipse cx="41" cy="37" rx="6" ry="2" fill="rgba(30,40,20,.5)"/>
+      <ellipse cx="59" cy="37" rx="6" ry="2" fill="rgba(30,40,20,.5)"/>
+      <path d="M58 13 L65 25" stroke="#8b0000" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M57 17 L61 15 M59.5 20.5 L63.5 18.5 M61.5 24 L65.5 22" stroke="#d9d0c0" stroke-width=".8"/>` },
+
+  { y:"fantasma", group:"terror", name:"👻 Fantasma", color:"#9fd8ff", filter:"grayscale(.5) brightness(1.1) contrast(.95) hue-rotate(180deg)",
+    pieces:["Lençol esvoaçante","Véu translúcido","Correntes e bola de ferro"],
+    outfit:() => `
+      <path d="M12 100 L18 64 Q50 54 82 64 L88 100 Q80 94 74 100 Q66 94 58 100 Q50 94 42 100 Q34 94 26 100 Q18 94 12 100 Z" fill="#f4f4f8" stroke="#c8c8d8" stroke-width=".8"/>
+      <path d="M24 34 Q24 4 50 4 Q76 4 76 34 Q76 52 84 62 L16 62 Q24 52 24 34 Z" fill="rgba(255,255,255,.3)" stroke="rgba(255,255,255,.85)" stroke-width="1"/>
+      <path d="M20 70 Q8 80 20 90" fill="none" stroke="#9a9aa8" stroke-width="1.6" stroke-dasharray="3 1.6"/>
+      <circle cx="20" cy="93" r="4" fill="#55555f" stroke="#2c2c34" stroke-width=".8"/>` },
+
+  { y:"frankenstein", group:"terror", name:"🔩 Frankenstein", color:"#6fbf5a", filter:"saturate(.8) hue-rotate(70deg) contrast(1.2) brightness(.9)",
+    pieces:["Parafusos no pescoço","Testa quadrada","Cicatriz costurada","Jaqueta preta"],
+    outfit:() => `
+      <path d="${T}" fill="#1c1c1c"/>
+      <path d="M41 60 L50 72 L59 60 L56 100 L44 100 Z" fill="#5d6770"/>
+      <path d="M41 60 L33 74 L46 68 Z M59 60 L67 74 L54 68 Z" fill="#2b2b2b" stroke="#444" stroke-width=".6"/>
+      <rect x="24" y="54" width="9" height="3" rx="1" fill="#9aa0a6"/><rect x="21" y="52.6" width="3" height="5.8" rx="1" fill="#bfc4c9"/>
+      <rect x="67" y="54" width="9" height="3" rx="1" fill="#9aa0a6"/><rect x="76" y="52.6" width="3" height="5.8" rx="1" fill="#bfc4c9"/>
+      <ellipse cx="50" cy="32" rx="17" ry="19" fill="rgba(90,160,70,.28)"/>
+      <path d="M31 22 L31 8 L69 8 L69 22 Q50 17 31 22 Z" fill="#0f0f0f"/>
+      <path d="M37 24 L63 24" stroke="#5a1a1a" stroke-width="1.3"/>
+      ${stitches}` },
+
+  { y:"palhaco", group:"terror", name:"🤡 Palhaço", color:"#ff2f6d", filter:"saturate(1.5) contrast(1.2) brightness(.9)",
+    pieces:["Peruca vermelha","Sorriso pintado","Gola de babados","Macacão de bolinhas"],
+    outfit:() => `
+      <defs><pattern id="dt" width="9" height="9" patternUnits="userSpaceOnUse">
+        <rect width="9" height="9" fill="#6a0dad"/><circle cx="4.5" cy="4.5" r="2" fill="#ffe600"/></pattern></defs>
+      <path d="${T}" fill="url(#dt)"/>
+      ${ruff("#00a8e8", "#ff2f6d")}
+      <circle cx="25" cy="22" r="10" fill="#e8302b"/><circle cx="75" cy="22" r="10" fill="#e8302b"/>
+      <circle cx="31" cy="12" r="7" fill="#e8302b"/><circle cx="69" cy="12" r="7" fill="#e8302b"/>
+      <path d="M37 31 L41 25 L45 31 L41 36 Z" fill="rgba(0,168,232,.7)"/>
+      <path d="M55 31 L59 25 L63 31 L59 36 Z" fill="rgba(0,168,232,.7)"/>
+      <circle cx="50" cy="37" r="3.6" fill="#e8302b" stroke="#7a0000" stroke-width=".6"/>
+      <path d="M36 40 Q50 54 64 40 M36 40 L32 35 M64 40 L68 35" fill="none" stroke="#d00018" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="62" cy="76" r="1.6" fill="#8b0000"/>` },
+
+  { y:"lobisomem", group:"terror", name:"🐺 Lobisomem", color:"#e0a030", filter:"sepia(.4) contrast(1.25) brightness(.85) saturate(1.2)",
+    pieces:["Orelhas peludas","Pelos e garras","Olhos amarelos","Presas"],
+    outfit:() => `
+      <path d="${T}" fill="#6b5238"/>
+      <path d="M27 63 L33 71 L37 60 L42 70 L46 60 L50 71 L54 60 L58 70 L63 60 L67 71 L73 63 L73 58 L27 58 Z" fill="#8a6c48"/>
+      <path d="M34 76 L44 96 M42 74 L52 94 M50 72 L60 92" stroke="#c0112b" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M30 22 L32 3 L46 15 Z" fill="#6b5238"/><path d="M70 22 L68 3 L54 15 Z" fill="#6b5238"/>
+      <path d="M33 17 L34 8 L41 14 Z M67 17 L66 8 L59 14 Z" fill="#d89a9a"/>
+      <circle cx="41" cy="31" r="2.6" fill="rgba(255,200,0,.6)"/><circle cx="59" cy="31" r="2.6" fill="rgba(255,200,0,.6)"/>
+      <path d="M45 39 L47 45 L49 39 Z M51 39 L53 45 L55 39 Z" fill="#fff"/>` },
+];
+
+/* ---------- ESTADO ---------- */
+const params = new URLSearchParams(location.search);
+const animal = params.get("animal");
+if (!ANIMALS[animal]) { location.href = "/"; }
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+let current = ERAS.find(e => e.y === "vampiro");
+let token = 0;
+
+/* ---------- POSIÇÃO DA ROUPA ---------- */
+let st = loadPos();
+function loadPos() {
+  try { const v = JSON.parse(localStorage.getItem("pos:" + animal)); if (v && isFinite(v.s)) return v; } catch (e) {}
+  return { ...(DEFAULTS[animal] || { x:0, y:0, s:1 }) };
+}
+function savePos() { try { localStorage.setItem("pos:" + animal, JSON.stringify(st)); } catch (e) {} }
+function applyPos() {
+  $("o-pos").setAttribute("transform", `translate(${50 + st.x} ${50 + st.y}) scale(${st.s}) translate(-50 -50)`);
+  $("size").value = Math.round(st.s * 100);
+}
+function resetPos() { st = { ...(DEFAULTS[animal] || { x:0, y:0, s:1 }) }; applyPos(); savePos(); }
+function copyPos() {
+  const v = { x:+st.x.toFixed(1), y:+st.y.toFixed(1), s:+st.s.toFixed(2) };
+  prompt(`Cole isto no DEFAULTS, na linha de "${animal}":`, `${animal}: ${JSON.stringify(v).replace(/"/g, "")},`);
+}
+
+const svg = $("outfit");
+let drag = null;
+svg.addEventListener("pointerdown", e => {
+  drag = { px:e.clientX, py:e.clientY, x:st.x, y:st.y };
+  svg.setPointerCapture(e.pointerId); svg.style.cursor = "grabbing";
+});
+svg.addEventListener("pointermove", e => {
+  if (!drag) return;
+  const k = 100 / svg.getBoundingClientRect().width;
+  st.x = drag.x + (e.clientX - drag.px) * k;
+  st.y = drag.y + (e.clientY - drag.py) * k;
+  applyPos();
+});
+["pointerup", "pointercancel"].forEach(ev => svg.addEventListener(ev, () => {
+  if (drag) { drag = null; svg.style.cursor = "grab"; savePos(); }
+}));
+$("size").addEventListener("input", e => { st.s = e.target.value / 100; applyPos(); savePos(); });
+
+/* ---------- ERA ---------- */
+function drawOutfit() {
+  const g = $("o-in");
+  g.innerHTML = current.outfit();
+  g.classList.remove("pop"); void g.getBoundingClientRect(); g.classList.add("pop");
+  $("pieces").innerHTML = current.pieces.map(p => `<span class="tag">${esc(p)}</span>`).join("");
+}
+
+function applyEra(era) {
+  current = era;
+  $("photo-card").classList.toggle("terror", era.group === "terror");
+  document.documentElement.style.setProperty("--accent", era.color);
+  $("sprite").style.filter = era.filter;
+  $("era-badge").textContent = era.name;
+  $("sub").textContent = "Look " + era.name + " para " + ANIMALS[animal];
+  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.y === era.y));
+  drawOutfit();
+  $("result").innerHTML = "";
+  $("bubble").style.display = "none";
+  token++;
+}
+
+$("sprite").src = `/static/assets/${animal}.jpg`;
+$("title").textContent = ANIMALS[animal];
+ERAS.forEach(era => {
+  const b = document.createElement("button");
+  b.className = "chip"; b.textContent = era.name; b.dataset.y = era.y;
+  b.onclick = () => applyEra(era);
+  $(era.group === "terror" ? "chips-terror" : "chips").appendChild(b);
+});
+applyPos();
+applyEra(current);
+
+/* ---------- ANÁLISE ---------- */
+function meter(label, pct) {
+  return `<div class="meter">
+    <div class="meter-head"><span>${label}</span><b>${pct}%</b></div>
+    <div class="bar"><i data-w="${pct}"></i></div></div>`;
+}
+
+const VERDICTS = {
+  combina:   ["v-combina",   "✅ Combina com a personalidade"],
+  parcial:   ["v-parcial",   "⚠️ Combina em parte"],
+  contraste: ["v-contraste", "🔥 Contraste total (de propósito?)"],
+};
+
+function render(a) {
+  const [cls, txt] = VERDICTS[a.verdict] || VERDICTS.parcial;
+  const sug = (a.suggestions || []).map(s => `<span class="tag">${esc(s)}</span>`).join("");
+  $("result").innerHTML = `
+    <div class="card">
+      <span class="verdict ${cls}">${txt}</span>
+      <div class="look"><b>✨ Look final</b>${esc(a.final_look)}</div>
+    </div>
+    <div class="card">
+      ${meter("Match personagem × estilo", a.match)}
+      ${a.agreement != null ? meter("Concordância IA × regras locais", a.agreement) : ""}
+      <p class="note">Estimativa de afinidade de estilo, não garantia de acerto.</p>
+      <details><summary>Por que esse resultado?</summary><p>${esc(a.reasoning)}</p></details>
+      <details><summary>Sobre o estilo</summary><p>${esc(a.era_explanation)}</p></details>
+    </div>
+    ${sug ? `<div class="card"><div class="label">Mais sugestões</div><div class="tags">${sug}</div></div>` : ""}
+    ${a.source === "local-backup" ? `<p class="note">Modo offline: resposta simplificada.</p>` : ""}`;
+  requestAnimationFrame(() => setTimeout(() =>
+    document.querySelectorAll(".bar i").forEach(i => i.style.width = i.dataset.w + "%"), 50));
+}
+
+async function requestOutfit() {
+  const my = ++token;
+  const btn = $("go");
+  btn.disabled = true; btn.textContent = "Analisando…";
+  $("bubble").style.display = "none";
+  $("result").innerHTML = `<div class="card"><div class="skel" style="width:40%"></div><div class="skel"></div><div class="skel" style="width:80%"></div></div>`;
+
+  try {
+    const r = await fetch(`/get-fashion-analysis/?animal=${encodeURIComponent(animal)}&year=${current.y}`);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const { analysis: a } = await r.json();
+    if (my !== token) return;
+
+    render(a);
+
+    setTimeout(() => {
+      if (my !== token) return;
+      const bub = $("bubble");
+      bub.innerHTML = `<small>${esc(ANIMALS[animal])} diz:</small>${esc(a.animal_comment || "Hmm...")}`;
+      bub.style.display = "block";
+      $("sprite").classList.add("bounce");
+      setTimeout(() => $("sprite").classList.remove("bounce"), 500);
+    }, 900);
+  } catch (e) {
+    console.error(e);
+    if (my === token) $("result").innerHTML = `<div class="card err">Não consegui gerar o look agora. Tente de novo em instantes.</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "Gerar análise de estilo ✨";
+  }
+}
+</script>
+</body>
+</html>

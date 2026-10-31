@@ -1,0 +1,38 @@
+{
+  "2016": {
+    "trend": "Estética Pokémon GO / Hipsters",
+    "suggestion": "Treinador Pokémon",
+    "reactions": {
+      "quati": "Squeak! (Se eu for o treinador, posso capturar todos os lanches do bandeijão?)",
+      "galinha": "Cócó! (Acho que me confundiriam com um Pidgey... não gostei!)",
+      "arara": "Screeech! (Olha esse boné! Estou pronta para dominar o campus!)"
+    }
+  },
+  "2020": {
+    "trend": "Estética Gamer / E-girls & E-boys",
+    "suggestion": "Streamer de Twitch com Headset Neon",
+    "reactions": {
+      "quati": "Grrr... (Esse headset aperta minhas orelhas, mas o RGB é lindo!)",
+      "galinha": "Cócó... (Será que meus ovos viralizam no TikTok?)",
+      "arara": "Screeech! (Vou fazer a live mais colorida da USP!)"
+    }
+  },
+  "2024": {
+    "trend": "Quiet Luxury / Old Money / Coquette",
+    "suggestion": "Look Minimalista com Laços e Pérolas",
+    "reactions": {
+      "quati": "Squeak? (Tudo muito branco... vou me sujar de terra em 2 segundos.)",
+      "galinha": "Cócó! (Finalmente! Um look que exala a elegância de quem acorda às 5h da manhã!)",
+      "arara": "Screeech! (Laços? Eu sou a própria definição de luxo natural!)"
+    }
+  },
+  "2026": {
+    "trend": "Futurismo Sustentável / Cyber-Organic",
+    "suggestion": "Traje de Bioplástico com Sensores de Luz",
+    "reactions": {
+      "quati": "Grrr! (Tecnologia? Eu prefiro a tecnologia de cavar buracos!)",
+      "galinha": "Cócó! (Estou me sentindo um frango do futuro, hiper-tecnológico!)",
+      "arara": "Screeech! (O futuro é azul e brilhante, exatamente como eu!)"
+    }
+  }
+}

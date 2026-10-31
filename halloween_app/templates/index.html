@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>USP Fashion Halloween | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --dark-red: #8b0000;
+            --bright-red: #dc143c;
+            --ivory: #f5f5f5;
+        }
+        body {
+            background-color: var(--black);
+            color: var(--ivory);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            border: 1px solid var(--bright-red);
+            padding: 50px;
+            background: linear-gradient(145deg, #0a0a0a, #1a0000);
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.2);
+            border-radius: 5px;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: var(--bright-red);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+        .animal-grid {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+        .animal-card {
+            cursor: pointer;
+            transition: 0.4s;
+            border: 1px solid transparent;
+            padding: 20px;
+            width: 200px;
+        }
+        .animal-card:hover {
+            border-color: var(--bright-red);
+            background: rgba(220, 20, 60, 0.1);
+            transform: translateY(-10px);
+        }
+        .animal-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            filter: grayscale(50%);
+            transition: 0.4s;
+        }
+        .animal-card:hover img {
+            filter: grayscale(0%);
+        }
+        .animal-card p {
+            margin-top: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>USP Fashion</h1>
+        <p class="subtitle">Selecione sua musa inspiradora para o Halloween</p>
+        
+        <div class="animal-grid">
+            <div class="animal-card" onclick="selectAnimal('quati')">
+                <img src="/static/assets/quati.jpg" alt="Quati">
+                <p>Quati da EACH</p>
+            </div>
+            <div class="animal-card" onclick="selectAnimal('galinha')">
+                <img src="/static/assets/galinha.jpg" alt="Galinha">
+                <p>Galinha</p>
+            </div>
+            <div class="animal-card" onclick="selectAnimal('flusp')">
+                <img src="/static/assets/flusp.jpg" alt="flusp">
+                <p>FLUSP</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectAnimal(animal) {
+        // Redireciona para o estúdio passando o animal escolhido via query string
+        // Exemplo: /estudio/?animal=quati
+    window.location.href = `/studio/?animal=${animal}`;
+}
+    </script>
+</body>
+</html>
